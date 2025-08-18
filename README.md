@@ -99,7 +99,20 @@ npm run dev
 ✅ **Web3 앱 최적화** - 블록체인 앱에 특화된 설정  
 ✅ **무료 호스팅** - 개인 프로젝트 무료  
 ✅ **자동 SSL** - HTTPS 자동 설정  
-✅ **글로벌 CDN** - 빠른 로딩 속도  
+✅ **글로벌 CDN** - 빠른 로딩 속도
+
+### 🔗 GitHub Pages 리다이렉트 설정
+
+Vercel 배포 후 GitHub 저장소 주소로 접근할 수 있도록 리다이렉트를 설정할 수 있습니다:
+
+1. **GitHub Pages 활성화**:
+   - GitHub 저장소 → Settings → Pages
+   - Source를 "Deploy from a branch"로 설정
+   - Branch를 "main"으로 설정
+   - Save 클릭
+
+2. **리다이렉트 확인**:
+   - `https://[username].github.io/staking-community-version`에서 접근하면 자동으로 Vercel로 리다이렉트됩니다  
 
 ### 로컬 개발
 
