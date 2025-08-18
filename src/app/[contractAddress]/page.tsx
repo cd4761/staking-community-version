@@ -677,10 +677,3 @@ export default function Page() {
 		</Flex>
 	);
 }
-
-// 정적 내보내기를 위한 generateStaticParams 함수
-export async function generateStaticParams() {
-	// GitHub Pages 배포를 위해 빈 배열을 반환
-	// 실제 운영에서는 알려진 contract address들을 여기에 추가할 수 있습니다
-	return [];
-}
