@@ -71,32 +71,43 @@ npm run dev
 
 - Uses Next.js production server with performance optimizations.
 
-## 🌐 GitHub Pages 배포
+## 🌐 Vercel 배포 (권장)
 
-이 프로젝트는 GitHub Pages를 통해 자동으로 배포됩니다.
+이 프로젝트는 Vercel을 통해 배포하는 것을 권장합니다.
 
-### 자동 배포 설정
+### Vercel 배포 방법
 
-1. **GitHub 저장소 설정**:
-   - GitHub 저장소의 Settings → Pages로 이동
-   - Source를 "GitHub Actions"로 설정
+1. **Vercel 계정 생성**:
+   - [vercel.com](https://vercel.com)에서 GitHub 계정으로 로그인
 
-2. **배포 트리거**:
+2. **프로젝트 연결**:
+   - "New Project" 클릭
+   - GitHub 저장소 `staking-community-version` 선택
+   - Framework Preset: Next.js (자동 감지)
+   - "Deploy" 클릭
+
+3. **자동 배포**:
    - `main` 브랜치에 푸시하면 자동으로 배포됩니다
-   - GitHub Actions에서 빌드 및 배포 과정을 확인할 수 있습니다
+   - 커스텀 도메인 설정 가능
 
-3. **배포 URL**:
-   - 배포 후 `https://[username].github.io/staking-community-version`에서 접근 가능
+4. **배포 URL**:
+   - `https://staking-community-version-[username].vercel.app`에서 접근 가능
 
-### 수동 배포
+### Vercel의 장점
 
-로컬에서 빌드하여 배포하려면:
+✅ **Next.js 완벽 지원** - 클라이언트/서버 컴포넌트 모두 지원  
+✅ **Web3 앱 최적화** - 블록체인 앱에 특화된 설정  
+✅ **무료 호스팅** - 개인 프로젝트 무료  
+✅ **자동 SSL** - HTTPS 자동 설정  
+✅ **글로벌 CDN** - 빠른 로딩 속도  
+
+### 로컬 개발
 
 ```bash
-npm run build
+npm run dev
 ```
 
-빌드된 파일은 `out` 디렉토리에 생성됩니다.
+개발 서버는 `http://localhost:3000`에서 실행됩니다.
 
 ---
 
