@@ -71,6 +71,33 @@ npm run dev
 
 - Uses Next.js production server with performance optimizations.
 
+## 🌐 GitHub Pages 배포
+
+이 프로젝트는 GitHub Pages를 통해 자동으로 배포됩니다.
+
+### 자동 배포 설정
+
+1. **GitHub 저장소 설정**:
+   - GitHub 저장소의 Settings → Pages로 이동
+   - Source를 "GitHub Actions"로 설정
+
+2. **배포 트리거**:
+   - `main` 브랜치에 푸시하면 자동으로 배포됩니다
+   - GitHub Actions에서 빌드 및 배포 과정을 확인할 수 있습니다
+
+3. **배포 URL**:
+   - 배포 후 `https://[username].github.io/staking-community-version`에서 접근 가능
+
+### 수동 배포
+
+로컬에서 빌드하여 배포하려면:
+
+```bash
+npm run build
+```
+
+빌드된 파일은 `out` 디렉토리에 생성됩니다.
+
 ---
 
 ## 🧹 Linting and Formatting
