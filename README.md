@@ -254,84 +254,62 @@ npm run dev
 - Navigate to `http://localhost:3000`
 - The app should load and show the staking interface
 
----
+<!-- #### Option 2: Docker Installation (Easier, No Software Installation Required)
 
-## 📈 Building and Running in Production
+**What is Docker?**
+Docker is a tool that packages everything needed to run an application into a "container" - like a pre-built box that contains everything the app needs.
 
-1. **Build** the optimized production bundle:
-   ```bash
-   npm run build
-   ```
+**Step 1: Install Docker**
 
-2. **Start** the production server:
-   ```bash
-   npm start
-   ```
+**Windows Users:**
+1. Download [Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)
+2. Install and restart your computer
+3. Start Docker Desktop (it will appear in your system tray)
 
-- Uses Next.js production server with performance optimizations.
+**Mac Users:**
+1. Download [Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/)
+2. Install and restart your computer
+3. Start Docker Desktop (it will appear in your menu bar)
 
-## 🌐 Vercel 배포 (권장)
-
-이 프로젝트는 Vercel을 통해 배포하는 것을 권장합니다.
-
-### Vercel 배포 방법
-
-1. **Vercel 계정 생성**:
-   - [vercel.com](https://vercel.com)에서 GitHub 계정으로 로그인
-
-2. **프로젝트 연결**:
-   - "New Project" 클릭
-   - GitHub 저장소 `staking-community-version` 선택
-   - Framework Preset: Next.js (자동 감지)
-   - "Deploy" 클릭
-
-3. **자동 배포**:
-   - `main` 브랜치에 푸시하면 자동으로 배포됩니다
-   - 커스텀 도메인 설정 가능
-
-4. **배포 URL**:
-   - `https://staking-community-version-[username].vercel.app`에서 접근 가능
-
-### Vercel의 장점
-
-✅ **Next.js 완벽 지원** - 클라이언트/서버 컴포넌트 모두 지원  
-✅ **Web3 앱 최적화** - 블록체인 앱에 특화된 설정  
-✅ **무료 호스팅** - 개인 프로젝트 무료  
-✅ **자동 SSL** - HTTPS 자동 설정  
-✅ **글로벌 CDN** - 빠른 로딩 속도
-
-### 🔗 GitHub Pages 리다이렉트 설정
-
-Vercel 배포 후 GitHub 저장소 주소로 접근할 수 있도록 리다이렉트를 설정할 수 있습니다:
-
-1. **GitHub Pages 활성화**:
-   - GitHub 저장소 → Settings → Pages
-   - Source를 "Deploy from a branch"로 설정
-   - Branch를 "main"으로 설정
-   - Save 클릭
-
-2. **리다이렉트 확인**:
-   - `https://[username].github.io/staking-community-version`에서 접근하면 자동으로 Vercel로 리다이렉트됩니다  
-
-### 로컬 개발
-
+**Linux Users:**
 ```bash
-npm run dev
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker $USER
+# Log out and log back in
 ```
 
-개발 서버는 `http://localhost:3000`에서 실행됩니다.
-
----
-
-## 🧹 Linting and Formatting
-
-Ensure code quality by running ESLint:
-
+**Step 2: Verify Docker Installation**
+Open Command Prompt (Windows) or Terminal (Mac/Linux) and run:
 ```bash
-npm run lint
+docker --version
+docker-compose --version
 ```
 
----
+**Step 3: Download and Run the App**
+1. **Open Command Prompt (Windows) or Terminal (Mac/Linux)**
+2. **Navigate to where you want to install the app:**
+   ```bash
+   # Windows
+   cd C:\Users\YourUsername\Desktop
+   
+   # Mac/Linux
+   cd ~/Desktop
+   ```
+3. **Download the app:**
+   ```bash
+   git clone https://github.com/tokamak-network/staking-community-version.git
+   cd staking-community-version
+   ```
+4. **Run with Docker:**
+   ```bash
+   docker run -p 3000:3000 -v $(pwd):/app -w /app node:18 npm install
+   docker run -p 3000:3000 -v $(pwd):/app -w /app node:18 npm run dev
+   ```
+
+**Note for Windows Users:** Replace `$(pwd)` with `%cd%` in the commands above.
+
+The app will be available at `http://localhost:3000`. -->
 
 ## 🔧 Troubleshooting
 
@@ -521,6 +499,25 @@ Restake is a feature that allows you to change your mind and stake again before 
 2. **Click Restake** to confirm
 3. **Confirm the transaction** in your wallet
 
+<!-- ## 🚀 Deployment
+
+### For End Users
+
+You don't need to worry about deployment! Just use the live app or follow the local setup instructions above.
+
+### For Developers
+
+If you're a developer and want to deploy this app:
+
+#### Vercel (Easiest)
+1. Install Vercel CLI: `npm i -g vercel`
+2. Run: `vercel`
+3. Follow the prompts
+
+#### Docker
+1. Build: `docker build -t staking-community-version .`
+2. Run: `docker run -p 3000:3000 staking-community-version` -->
+
 ## Support 
 
 - **GitHub Issues**: [Report bugs or request features](https://github.com/tokamak-network/staking-community-version/issues)
@@ -529,3 +526,6 @@ Restake is a feature that allows you to change your mind and stake again before 
 ## License
 
 This project is open source and distributed under the MIT License.
+
+
+
