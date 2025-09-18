@@ -5,7 +5,7 @@ import { ChakraProvidersForNextJs } from "@/providers/chakraProvider";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { getQueryClient } from "@/client/queryClient";
 import { usePublicClient } from "wagmi";
-import { TONStakingProvider } from "@ton-staking-sdk/react-kit";
+import { TONStakingProvider } from "@tokamak-ecosystem/staking-sdk-react-kit";
 import { Flex } from "@chakra-ui/react";
 import { Header } from "@/components/header";
 import Modals from "./Modal";

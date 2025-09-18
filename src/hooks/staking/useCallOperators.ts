@@ -26,7 +26,7 @@ import Layer2Manager from "@/abis/Layer2Manager.json";
 import SystemConfig from "@/abis/SystemConfig.json";
 import Candidates from "@/abis/Candidate.json";
 import { getContractAddress } from "@/constant/contracts";
-import { useAllCandidates } from "@ton-staking-sdk/react-kit";
+import { useAllCandidates } from "@tokamak-ecosystem/staking-sdk-react-kit";
 import trimAddress from "@/utils/trim/trim";
 
 type SortDirection = "asc" | "desc";

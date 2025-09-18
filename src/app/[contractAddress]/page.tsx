@@ -50,10 +50,11 @@ import {
 	useExpectedSeig,
 	useLayer2RewardInfo,
 	useClaimableL2Seigniorage,
-	useCheckCandidateType,
 	useCandidateStake,
 	useIsCandidateAddon,
-} from "@ton-staking-sdk/react-kit";
+	useAllCandidatesTotalStaked,
+	useCandidateMemo
+} from "@tokamak-ecosystem/staking-sdk-react-kit";
 import { useWithdrawableLength } from "@/hooks/staking/useWithdrawable";
 import useCallOperators from "@/hooks/staking/useCallOperators";
 // import useStakeWTON from '@/hooks/staking/useStakeWTON';
@@ -118,8 +119,6 @@ export default function Page() {
 	}, [address]);
 
 	useEffect(() => {
-		// console.log(operatorsList, candidateAddress)
-		// console.log(candidateAddress && operators.length > 0, candidateAddress, operators)
 		if (candidateAddress && operatorsList.length > 0) {
 			const operator = operatorsList.find(
 				(op) => op.address === candidateAddress,
@@ -129,20 +128,24 @@ export default function Page() {
 		}
 	}, [candidateAddress, operatorsList, txPending]);
 
+	const { data: allCandidatesTotalStaked, isLoading: allCandidatesTotalStakedLoading } = useAllCandidatesTotalStaked();
+
 	const {
 		expectedSeig,
 		lastSeigBlock,
 		commissionRate: commissionRates,
 	} = useExpectedSeigs(
 		candidateAddress as `0x${string}`,
-		currentOperator?.totalStaked || "0",
+		allCandidatesTotalStaked || "0",
 	);
+
+	
 	// console.log(expSeig)
-	// const { expectedSeig, lastSeigBlock, isLoading: seigLoading, commissionRates } = useExpectedSeig(
-	//   candidateAddress as `0x${string}`,
-	//   BigInt(currentOperator?.totalStaked || '0'),
-	//   address as `0x${string}`,
-	// );
+	const { expectedSeig: expSeig, lastSeigBlock: lastSeig, isLoading: seigLoading } = useExpectedSeig(
+	  candidateAddress as `0x${string}`,
+	  BigInt(allCandidatesTotalStaked || '0'),
+	  address as `0x${string}`,
+	);
 
 	const { layer2Reward } = useLayer2RewardInfo({
 		candidateAddress: candidateAddress as `0x${string}`,
@@ -150,18 +153,23 @@ export default function Page() {
 	const { claimableAmount } = useClaimableL2Seigniorage({
 		candidateAddress: candidateAddress as `0x${string}`,
 	});
+	const { data: userStaked, isLoading: userStakedLoading } = useUserStakeAmount({
+		layer2Address: candidateAddress as `0x${string}`,
+		accountAddress: address as `0x${string}`,
+	});
+	const { data: candidateStaked, isLoading: candidateStakedLoading } = useCandidateStake({
+		layer2Address: candidateAddress as `0x${string}`,
+	});
+	const { candidateMemo, isLoading: candidateMemoLoading } = useCandidateMemo(
+		candidateAddress as `0x${string}`
+	);
 
-	// console.log(claimableAmount);
-	// const { data: userStaked, isLoading: userStakedLoading } = useUserStakeAmount({
-	//   candidateAddress: candidateAddress as `0x${string}`,
-	//   accountAddress: address as `0x${string}`
-	// })
-	// const { data: candidateStaked, isLoading: candidateStakeLoading } = useCandidateStake({
-	//   candidateAddress: candidateAddress as `0x${string}`
-	// })
-	// const { candidateType } = useCheckCandidateType({ candidateAddress: candidateAddress as `0x${string}` });
-	// const { isCandidateAddon} = useIsCandidateAddon({ candidateAddress: currentOperator?.address as `0x${string}` });
-	// console.log(isCandidateAddon);
+	// const { candidateType, isLoading: candidateTypeLoading } = useCheckCandidateType({
+	// 	candidateAddress: candidateAddress as `0x${string}`,
+	// });
+	const { isCandidateAddon, isLoading: isCandidateAddonLoading } = useIsCandidateAddon({
+		candidateAddress: candidateAddress as `0x${string}`,
+	});
 
 	const [activeToken, setActiveToken] = useState<string>("TON");
 	const [activeAction, setActiveAction] = useState<string>("Stake");
@@ -218,21 +226,21 @@ export default function Page() {
 	useEffect(() => {
 		if (
 			activeAction === "WithdrawL2" ||
-			(activeAction === "WithdrawL1" && currentOperator?.isL2)
+			(activeAction === "WithdrawL1" && isCandidateAddon)
 		) {
 			setShowWithdrawOptions(true);
 		} else {
 			setShowWithdrawOptions(false);
 		}
-	}, [activeAction, currentOperator?.isL2]);
+	}, [activeAction, isCandidateAddon]);
 
 	const onClick = useCallback(async () => {
 		const amount = floatParser(value);
 		let tx;
-		// yourStaked는 27자리 단위로 들어옴
+		
 		const yourStaked = Number(
-			currentOperator?.yourStaked
-				? ethers.utils.formatUnits(currentOperator.yourStaked, 27)
+			userStaked
+				? ethers.utils.formatUnits(userStaked, 27)
 				: 0,
 		);
 		if (activeAction === "Unstake") {
@@ -302,8 +310,8 @@ export default function Page() {
 		withdrawableLength,
 		value,
 		withdrawTarget,
-		currentOperator?.isL2,
-		currentOperator?.yourStaked,
+		isCandidateAddon,
+		userStaked,
 	]);
 
 	const formatUnits = useCallback((amount: string, unit: number) => {
@@ -337,22 +345,22 @@ export default function Page() {
 	const isL2 = currentOperator?.isL2 || false;
 
 	const isUnstakeDisabled = useCallback(() => {
-		if (!currentOperator?.yourStaked) return true;
+		if (!userStaked) return true;
 		const stakedAmount = Number(
-			ethers.utils.formatUnits(currentOperator.yourStaked.toString(), 27),
+			ethers.utils.formatUnits(userStaked.toString(), 27),
 		);
 		if (stakedAmount === 0) return true;
 		if (!value || value === "0" || value === "0.00") return true;
 		return value ? Number(value) > stakedAmount : true;
-	}, [currentOperator?.yourStaked, value]);
+	}, [userStaked, value]);
 
 	const showUnstakeWarning = useCallback(() => {
-		if (!currentOperator?.yourStaked || !value) return false;
+		if (!userStaked || !value) return false;
 		const stakedAmount = Number(
-			ethers.utils.formatUnits(currentOperator.yourStaked.toString(), 27),
+			ethers.utils.formatUnits(userStaked.toString(), 27),
 		);
 		return value !== "0" && value !== "0.00" && Number(value) > stakedAmount;
-	}, [currentOperator?.yourStaked, value]);
+	}, [userStaked, value]);
 
 	return (
 		<Flex
@@ -385,8 +393,8 @@ export default function Page() {
 					ml={"20px"}
 					alignItems={"center"}
 				>
-					{currentOperator?.name || "Loading..."}
-					{currentOperator?.isL2 && (
+					{candidateMemo}
+					{isCandidateAddon && (
 						<Flex
 							bgColor={"#257eee"}
 							w={"34px"}
@@ -425,8 +433,8 @@ export default function Page() {
 				/>
 				<HeadInfo
 					title="Total staked"
-					value={`${formatUnits(currentOperator?.totalStaked || "0", 27)} TON`}
-					isLoading={!currentOperator?.totalStaked}
+					value={`${formatUnits(candidateStaked || "0", 27)} TON`}
+					// isLoading={!candidateStakedLoading}
 					label=""
 					// isLoading={candidateStakeLoading}
 				/>
@@ -440,7 +448,7 @@ export default function Page() {
 			<ActionSection
 				activeAction={activeAction}
 				setActiveAction={setActiveAction}
-				isL2={isL2}
+				isL2={isCandidateAddon}
 				setValue={setValue}
 				withdrawableAmount={withdrawableAmount}
 				withdrawTarget={withdrawTarget}
@@ -467,7 +475,7 @@ export default function Page() {
 							<Flex w={"18px"} mx={"6px"}>
 								<Image src={ARROW} alt={""} />
 							</Flex>
-							<Flex>{currentOperator?.name}</Flex>
+							<Flex>{candidateMemo}</Flex>
 						</Flex>
 					) : activeAction === "Unstake" || activeAction === "Restake" ? (
 						<Flex h={"25px"} />
@@ -522,7 +530,7 @@ export default function Page() {
 									? activeToken === "TON"
 										? formatUnits(tonBalance, 18)
 										: formatUnits(wtonBalance, 27)
-									: formatUnits(currentOperator?.yourStaked || "0", 27)
+									: formatUnits(userStaked || "0", 27)
 							}
 						/>
 					)}
@@ -576,20 +584,20 @@ export default function Page() {
 				<VStack spacing={6} align="stretch">
 					<ValueSection
 						title={"Your Staked Amount"}
-						value={currentOperator?.yourStaked || "0"}
-						// isLoading={userStakedLoading}
+						value={userStaked || "0"}
+						isLoading={userStakedLoading}
 					/>
 					<Divider />
 					<ValueSection
 						title={"Unclaimed Staking Reward"}
-						value={expectedSeig}
+						value={expSeig}
 						onClaim={() => updateSeig()}
-						// isLoading={seigLoading}
+						isLoading={seigLoading}
 						seigUpdated={lastSeigBlock ?? undefined}
 					/>
 				</VStack>
 			</Box>
-			{isL2 ? (
+			{isCandidateAddon ? (
 				<VStack>
 					<Flex
 						fontSize={"16px"}

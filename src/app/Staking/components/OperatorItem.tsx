@@ -21,7 +21,7 @@ import {
 	useIsCandidateAddon,
 	useOperatorManager,
 	useUserStakeAmount,
-} from "@ton-staking-sdk/react-kit";
+} from "@tokamak-ecosystem/staking-sdk-react-kit";
 import { getAvatarBgColor, getInitials } from "@/utils/color/getAvatarInfo";
 import { LoadingDots } from "@/components/Loader/LoadingDots";
 import { useAccount } from "wagmi";
