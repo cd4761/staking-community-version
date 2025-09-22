@@ -2,19 +2,12 @@
 import { useEffect, useRef, useState } from "react";
 import {
 	Box,
-	Heading,
-	Text,
 	Flex,
-	VStack,
-	Badge,
-	Center,
-	HStack,
 	Spinner,
 } from "@chakra-ui/react";
 import useCallOperators from "@/hooks/staking/useCallOperators";
 import React from "react";
 import { OperatorItem } from "./components/OperatorItem";
-import { LoadingDots } from "@/components/Loader/LoadingDots";
 
 const Candidates: React.FC = () => {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -37,11 +30,14 @@ const Candidates: React.FC = () => {
 			? Array(minItems).fill(filteredOperators).flat().slice(0, minItems)
 			: filteredOperators;
 
-	const repeatedOperators = [
-		...baseOperators,
-		...baseOperators,
-		...baseOperators,
-	];
+	const repeatedOperators = 
+		baseOperators.length > 20 ? 
+		baseOperators : 
+		[
+			...baseOperators,
+			...baseOperators,
+			...baseOperators,
+		];
 
 	useEffect(() => {
 		if (!mounted) return;
@@ -65,7 +61,7 @@ const Candidates: React.FC = () => {
 		return () => {
 			container.removeEventListener("scroll", onScroll);
 		};
-	}, [mounted, baseOperators.length]);
+	}, [mounted]);
 
 	if (!mounted) {
 		return (
@@ -115,8 +111,8 @@ const Candidates: React.FC = () => {
 							<Spinner size="lg" color="#2a72e5" />
 						</Flex>
 					) : (
-						repeatedOperators.map((operator, index) => (
-							<OperatorItem key={index} operator={operator} />
+						repeatedOperators.map((operator) => (
+							<OperatorItem key={operator.address} operator={operator} />
 						))
 					)}
 				</Flex>

@@ -192,12 +192,13 @@ export default function useCallOperators() {
 				const candidateAddon = getContractInstance(opAddress, CandidateAddon);
 				if (!candidateAddon) return null;
 
-				let operatorAddress;
+				let operatorAddress: string | null = null;
 				try {
 					operatorAddress = await candidateAddon.read.operator();
 				} catch (error) {
 					operatorAddress = null;
 				}
+				
 				// console.log(memo )
 				const operatorInfo: Operator = {
 					name:
@@ -213,7 +214,7 @@ export default function useCallOperators() {
 					totalStaked: totalStaked,
 					yourStaked: userStaked,
 					isL2: false,
-					operatorAddress: operatorAddress,
+					operatorAddress: operatorAddress || undefined,
 				};
 				operatorAddress = await candidateAddon.read.operator();
 				if (operatorAddress) {
@@ -227,16 +228,16 @@ export default function useCallOperators() {
 							OperatorManager,
 						);
 						if (operatorManager) {
-							let rollupConfigAddress;
+							let rollupConfigAddress: string | null = null;
 							try {
 								rollupConfigAddress = await operatorManager.read.rollupConfig();
 							} catch (error) {
 								rollupConfigAddress = null;
 							}
-							let manager;
+							let manager: string | null = null	;
 							try {
 								manager = await operatorManager.read.manager();
-								operatorInfo.manager = manager;
+								operatorInfo.manager = manager || undefined;
 							} catch (error) {
 								manager = null;
 							}
@@ -415,7 +416,7 @@ export default function useCallOperators() {
 	}, [
 		publicClient,
 		commonContracts,
-		// operatorAddresses,
+		operatorAddresses.length,
 		blockNumber,
 		isLoading,
 		compareTotalStaked,
@@ -423,7 +424,9 @@ export default function useCallOperators() {
 		sortDirection,
 		setOperatorsList,
 		operatorsList.length,
-		loading,
+		CONTRACT_ADDRESS.Layer2Registry_ADDRESS,
+		getContractInstance,
+		setLoading,
 	]);
 
 	const refreshOperator = useCallback(
@@ -511,11 +514,13 @@ export default function useCallOperators() {
 		}
 	}, [
 		publicClient,
-		// operatorAddresses,
+		operatorAddresses.length,
+		operatorAddresses.slice,
 		fetchOperatorData,
 		compareTotalStaked,
 		sortDirection,
 		setOperatorsList,
+		setLoading,
 	]);
 
 	return {

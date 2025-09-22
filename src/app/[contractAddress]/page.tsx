@@ -116,7 +116,7 @@ export default function Page() {
 
 	useEffect(() => {
 		if (!address) router.push("/");
-	}, [address]);
+	}, [address, router]);
 
 	useEffect(() => {
 		if (candidateAddress && operatorsList.length > 0) {
@@ -126,26 +126,7 @@ export default function Page() {
 			// console.log(operator)
 			setCurrentOperator(operator || null);
 		}
-	}, [candidateAddress, operatorsList, txPending]);
-
-	const { data: allCandidatesTotalStaked, isLoading: allCandidatesTotalStakedLoading } = useAllCandidatesTotalStaked();
-
-	const {
-		expectedSeig,
-		lastSeigBlock,
-		commissionRate: commissionRates,
-	} = useExpectedSeigs(
-		candidateAddress as `0x${string}`,
-		allCandidatesTotalStaked || "0",
-	);
-
-	
-	// console.log(expSeig)
-	const { expectedSeig: expSeig, lastSeigBlock: lastSeig, isLoading: seigLoading } = useExpectedSeig(
-	  candidateAddress as `0x${string}`,
-	  BigInt(allCandidatesTotalStaked || '0'),
-	  address as `0x${string}`,
-	);
+	}, [candidateAddress, operatorsList]);
 
 	const { layer2Reward } = useLayer2RewardInfo({
 		candidateAddress: candidateAddress as `0x${string}`,
@@ -164,9 +145,21 @@ export default function Page() {
 		candidateAddress as `0x${string}`
 	);
 
-	// const { candidateType, isLoading: candidateTypeLoading } = useCheckCandidateType({
-	// 	candidateAddress: candidateAddress as `0x${string}`,
-	// });
+	// const {
+	// 	expectedSeig,
+	// 	lastSeigBlock,
+	// 	commissionRate: commissionRates,
+	// } = useExpectedSeigs(
+	// 	candidateAddress as `0x${string}`,
+	// 	candidateStaked || "0",
+	// );
+	
+	const { expectedSeig: expSeig, lastSeigBlock, isLoading: seigLoading, commissionRate: commissionRates } = useExpectedSeig(
+	  candidateAddress as `0x${string}`,
+	  BigInt(candidateStaked || '0'),
+	  address as `0x${string}`,
+	);
+
 	const { isCandidateAddon, isLoading: isCandidateAddonLoading } = useIsCandidateAddon({
 		candidateAddress: candidateAddress as `0x${string}`,
 	});
@@ -212,7 +205,7 @@ export default function Page() {
 			}
 		}
 		prevTxPendingRef.current = txPending;
-	}, [txPending, candidateAddress]);
+	}, [txPending, candidateAddress, refreshOperator]);
 
 	useEffect(() => {
 		const token =
@@ -220,7 +213,7 @@ export default function Page() {
 				? "TON"
 				: activeToken;
 		setActiveToken(token);
-	}, [activeAction]);
+	}, [activeAction, activeToken]);
 
 	// Handle withdraw action for L2
 	useEffect(() => {
@@ -236,7 +229,7 @@ export default function Page() {
 
 	const onClick = useCallback(async () => {
 		const amount = floatParser(value);
-		let tx;
+		let tx: any;
 		
 		const yourStaked = Number(
 			userStaked
@@ -261,7 +254,7 @@ export default function Page() {
 			const rayAmount = convertToRay(amount.toString());
 			try {
 				switch (activeAction) {
-					case "Stake":
+					case "Stake": {
 						const marshalData = getData();
 						const wtonMarshalData = getDataForWton();
 						tx =
@@ -273,30 +266,36 @@ export default function Page() {
 										wtonMarshalData,
 									]);
 						break;
-					case "Unstake":
+					}
+					case "Unstake": {
 						const rayAmouont = convertToRay(amount.toString());
 						tx = await unstake([candidateAddress, rayAmouont]);
 						break;
-					case "Withdraw":
+					}
+					case "Withdraw": {
 						tx = await withdraw([
 							candidateAddress,
 							withdrawableLength,
 							activeToken === "TON" ? true : false,
 						]);
 						break;
-					case "WithdrawL1":
+					}
+					case "WithdrawL1": {
 						tx = await withdraw([
 							candidateAddress,
 							withdrawableLength,
 							activeToken === "TON" ? true : false,
 						]);
 						break;
-					case "WithdrawL2":
+					}
+					case "WithdrawL2": {
 						tx = await withdrawL2([candidateAddress, rayAmount]);
 						break;
-					case "Restake":
+					}
+					case "Restake": {
 						tx = await restake([candidateAddress, pendingRequests]);
 						break;
+					}
 					default:
 						console.error("action mode is not found");
 				}
