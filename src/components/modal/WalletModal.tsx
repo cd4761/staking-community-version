@@ -185,7 +185,7 @@ const WalletModal: FC = () => {
 		const getChainId = async () => {
 			try {
 				const hexChainId = await ethereum.request({ method: "eth_chainId" });
-				const parsed = parseInt(hexChainId, 16);
+				const parsed = parseInt("0xAA36A7", 16);
 				setChainId(parsed);
 			} catch (err) {
 				console.error("Failed to get chainId:", err);
@@ -210,7 +210,7 @@ const WalletModal: FC = () => {
 				ethereum.removeListener("chainChanged", handleChainChanged);
 			}
 		};
-	}, []);
+	}, [setChainId]);
 
 	useEffect(() => {
 		if (address && !previousAddress) {

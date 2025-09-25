@@ -167,7 +167,7 @@ export default function useCallOperators() {
 	const fetchOperatorData = useCallback(
 		async (opAddress: string): Promise<Operator | null> => {
 			if (!opAddress || !publicClient || !commonContracts) return null;
-			const { layer2manager, seigManager, wton, ton } = commonContracts;
+			// const { layer2manager, seigManager, wton, ton } = commonContracts;
 
 			try {
 				const candidateContract = getContractInstance(opAddress, Candidates);
@@ -182,7 +182,7 @@ export default function useCallOperators() {
 					}),
 				);
 
-				const userStaked = await candidateContract.read.stakedOf([address]);
+				// const userStaked = await candidateContract.read.stakedOf([address]);
 				// console.log('userStaked', userStaked)
 
 				const totalStaked = await candidateContract.read
@@ -212,114 +212,114 @@ export default function useCallOperators() {
 								}),
 					address: opAddress,
 					totalStaked: totalStaked,
-					yourStaked: userStaked,
+					yourStaked: '0',
 					isL2: false,
 					operatorAddress: operatorAddress || undefined,
 				};
-				operatorAddress = await candidateAddon.read.operator();
-				if (operatorAddress) {
-					const operatorContractExists = await checkContractExists(
-						operatorAddress as string,
-					);
+				// operatorAddress = await candidateAddon.read.operator();
+				// if (operatorAddress) {
+				// 	const operatorContractExists = await checkContractExists(
+				// 		operatorAddress as string,
+				// 	);
 
-					if (operatorContractExists) {
-						const operatorManager = getContractInstance(
-							operatorAddress as string,
-							OperatorManager,
-						);
-						if (operatorManager) {
-							let rollupConfigAddress: string | null = null;
-							try {
-								rollupConfigAddress = await operatorManager.read.rollupConfig();
-							} catch (error) {
-								rollupConfigAddress = null;
-							}
-							let manager: string | null = null	;
-							try {
-								manager = await operatorManager.read.manager();
-								operatorInfo.manager = manager || undefined;
-							} catch (error) {
-								manager = null;
-							}
+				// 	if (operatorContractExists) {
+				// 		const operatorManager = getContractInstance(
+				// 			operatorAddress as string,
+				// 			OperatorManager,
+				// 		);
+				// 		if (operatorManager) {
+				// 			let rollupConfigAddress: string | null = null;
+				// 			try {
+				// 				rollupConfigAddress = await operatorManager.read.rollupConfig();
+				// 			} catch (error) {
+				// 				rollupConfigAddress = null;
+				// 			}
+				// 			let manager: string | null = null	;
+				// 			try {
+				// 				manager = await operatorManager.read.manager();
+				// 				operatorInfo.manager = manager || undefined;
+				// 			} catch (error) {
+				// 				manager = null;
+				// 			}
 
-							if (rollupConfigAddress) {
-								try {
-									const rollupConfig = getContractInstance(
-										rollupConfigAddress as string,
-										SystemConfig,
-									);
+				// 			if (rollupConfigAddress) {
+				// 				try {
+				// 					const rollupConfig = getContractInstance(
+				// 						rollupConfigAddress as string,
+				// 						SystemConfig,
+				// 					);
 
-									if (rollupConfig && layer2manager) {
-										const bridgeDetail =
-											await layer2manager.read.checkL1BridgeDetail([
-												rollupConfigAddress,
-											]);
-										// console.log(memo, bridgeDetail, rollupConfigAddress);
-										if (Array.isArray(bridgeDetail) && bridgeDetail[5] === 1) {
-											operatorInfo.isL2 = true;
+				// 					if (rollupConfig && layer2manager) {
+				// 						const bridgeDetail =
+				// 							await layer2manager.read.checkL1BridgeDetail([
+				// 								rollupConfigAddress,
+				// 							]);
+				// 						// console.log(memo, bridgeDetail, rollupConfigAddress);
+				// 						if (Array.isArray(bridgeDetail) && bridgeDetail[5] === 1) {
+				// 							operatorInfo.isL2 = true;
 
-											if (
-												rollupConfig &&
-												ton &&
-												wton &&
-												seigManager &&
-												blockNumber
-											) {
-												const [bridgeAddress, wtonBalanceOfM] =
-													await Promise.all([
-														rollupConfig.read
-															.optimismPortal()
-															.catch(() => null),
-														wton.read
-															.balanceOf([operatorAddress])
-															.catch(() => "0"),
-													]);
+				// 							if (
+				// 								rollupConfig &&
+				// 								ton &&
+				// 								wton &&
+				// 								seigManager &&
+				// 								blockNumber
+				// 							) {
+				// 								const [bridgeAddress, wtonBalanceOfM] =
+				// 									await Promise.all([
+				// 										rollupConfig.read
+				// 											.optimismPortal()
+				// 											.catch(() => null),
+				// 										wton.read
+				// 											.balanceOf([operatorAddress])
+				// 											.catch(() => "0"),
+				// 									]);
 
-												if (bridgeAddress) {
-													const lockedInBridge = await ton.read
-														.balanceOf([bridgeAddress])
-														.catch(() => "0");
-													operatorInfo.lockedInL2 = lockedInBridge.toString();
-												}
+				// 								if (bridgeAddress) {
+				// 									const lockedInBridge = await ton.read
+				// 										.balanceOf([bridgeAddress])
+				// 										.catch(() => "0");
+				// 									operatorInfo.lockedInL2 = lockedInBridge.toString();
+				// 								}
 
-												try {
-													const estimatedDistribution =
-														await seigManager.read.estimatedDistribute([
-															Number(blockNumber.toString()) + 1,
-															opAddress,
-															true,
-														]);
+				// 								try {
+				// 									const estimatedDistribution =
+				// 										await seigManager.read.estimatedDistribute([
+				// 											Number(blockNumber.toString()) + 1,
+				// 											opAddress,
+				// 											true,
+				// 										]);
 
-													if (
-														estimatedDistribution &&
-														estimatedDistribution[7] !== undefined
-													) {
-														const addedWton = BigNumber.from(
-															wtonBalanceOfM || "0",
-														).add(
-															BigNumber.from(estimatedDistribution[7] || "0"),
-														);
-														operatorInfo.sequencerSeig = addedWton.toString();
-													}
-												} catch (error) {
-													console.error(
-														"Error estimating distribution:",
-														error,
-													);
-												}
-											}
-										}
-									}
-								} catch (error) {
-									console.error(
-										`Failed to get bridge details for ${opAddress}:`,
-										error,
-									);
-								}
-							}
-						}
-					}
-				}
+				// 									if (
+				// 										estimatedDistribution &&
+				// 										estimatedDistribution[7] !== undefined
+				// 									) {
+				// 										const addedWton = BigNumber.from(
+				// 											wtonBalanceOfM || "0",
+				// 										).add(
+				// 											BigNumber.from(estimatedDistribution[7] || "0"),
+				// 										);
+				// 										operatorInfo.sequencerSeig = addedWton.toString();
+				// 									}
+				// 								} catch (error) {
+				// 									console.error(
+				// 										"Error estimating distribution:",
+				// 										error,
+				// 									);
+				// 								}
+				// 							}
+				// 						}
+				// 					}
+				// 				} catch (error) {
+				// 					console.error(
+				// 						`Failed to get bridge details for ${opAddress}:`,
+				// 						error,
+				// 					);
+				// 				}
+				// 			}
+				// 		}
+				// 	}
+				// }
 
 				if (!address) {
 					operatorDataCache.set(opAddress, operatorInfo);
@@ -335,9 +335,7 @@ export default function useCallOperators() {
 			publicClient,
 			commonContracts,
 			address,
-			blockNumber,
 			getContractInstance,
-			checkContractExists,
 		],
 	);
 
@@ -372,12 +370,14 @@ export default function useCallOperators() {
 				const operators: Operator[] = [];
 				const layer2s = [];
 
+				console.log("numLayer2", numLayer2);
+
 				for (let i = 0; i < numLayer2; i++) {
 					const layer2 = await l2Registry.read.layer2ByIndex([i]);
 					layer2s.push(layer2);
 				}
 				setOperatorAddress(layer2s);
-
+				console.log(layer2s.length)
 				for (let i = 0; i < layer2s.length; i += chunkSize) {
 					const chunk = layer2s.slice(i, i + chunkSize);
 

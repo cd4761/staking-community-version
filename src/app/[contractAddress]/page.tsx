@@ -311,6 +311,7 @@ export default function Page() {
 		withdrawTarget,
 		isCandidateAddon,
 		userStaked,
+		DepositManager_ADDRESS,
 	]);
 
 	const formatUnits = useCallback((amount: string, unit: number) => {
@@ -339,9 +340,7 @@ export default function Page() {
 					.map((str) => padLeft(str, 64))
 					.join(""),
 			);
-	}, []);
-
-	const isL2 = currentOperator?.isL2 || false;
+	}, [candidateAddress]);
 
 	const isUnstakeDisabled = useCallback(() => {
 		if (!userStaked) return true;

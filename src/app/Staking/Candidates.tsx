@@ -6,6 +6,7 @@ import {
 	Spinner,
 } from "@chakra-ui/react";
 import useCallOperators from "@/hooks/staking/useCallOperators";
+import { useAllCandidates } from "@tokamak-ecosystem/staking-sdk-react-kit";
 import React from "react";
 import { OperatorItem } from "./components/OperatorItem";
 
@@ -24,6 +25,9 @@ const Candidates: React.FC = () => {
 		op.name.toLowerCase().includes(searchTerm.toLowerCase()),
 	);
 
+	const { candidates: operatorAddresses, isLoading } = useAllCandidates();
+	console.log("operatorAddresses", operatorAddresses, isLoading);
+
 	const minItems = 30;
 	const baseOperators =
 		filteredOperators.length < minItems
@@ -39,6 +43,7 @@ const Candidates: React.FC = () => {
 			...baseOperators,
 		];
 
+	console.log("repeatedOperators", repeatedOperators.length);
 	useEffect(() => {
 		if (!mounted) return;
 		const container = scrollContainerRef.current;

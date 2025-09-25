@@ -148,7 +148,7 @@ export function useExpectedSeigs(
 			wton: getContractInstance(CONTRACT_ADDRESS.WTON_ADDRESS, WTON_ABI),
 			ton: getContractInstance(CONTRACT_ADDRESS.TON_ADDRESS, TON_ABI),
 		};
-	}, [publicClient, getContractInstance, CONTRACT_ADDRESS]);
+	}, [publicClient, getContractInstance, CONTRACT_ADDRESS.WTON_ADDRESS, CONTRACT_ADDRESS.SeigManager_ADDRESS, CONTRACT_ADDRESS.TON_ADDRESS]);
 
 	useEffect(() => {
 		const calculateSeig = async (): Promise<void> => {
@@ -307,6 +307,8 @@ export function useExpectedSeigs(
 		blockNumber,
 		publicClient,
 		commonContracts,
+		getContractInstance,
+		CONTRACT_ADDRESS,
 	]);
 
 	return { expectedSeig, seigOfLayer, commissionRate, lastSeigBlock };

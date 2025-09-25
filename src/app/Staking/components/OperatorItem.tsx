@@ -39,13 +39,13 @@ export const OperatorItem: React.FC<OperatorItemProps> = React.memo(
 		// const { data: candidateStaked, isLoading: candidateStakeLoading } = useCandidateStake({
 		//   candidateAddress: operator.address as `0x${string}`
 		// })
-		// const { data: userStaked, isLoading: userStakedLoading } = useUserStakeAmount({
-		//   candidateAddress: operator.address as `0x${string}`,
-		//   accountAddress: address as `0x${string}`
-		// })
+		const { data: userStaked, isLoading: userStakedLoading } = useUserStakeAmount({
+		  layer2Address: operator.address as `0x${string}`,
+		  accountAddress: address as `0x${string}`
+		})
 
 		// const { candidateType } = useCheckCandidateType({ candidateAddress: operator.address as `0x${string}` });
-		//   const { isCandidateAddon} = useIsCandidateAddon({ candidateAddress: operator.address as `0x${string}` });
+		  const { isCandidateAddon} = useIsCandidateAddon({ candidateAddress: operator.address as `0x${string}` });
 		// const { operatorManagerAddress } = useOperatorManager({ candidateAddress: operator.address as `0x${string}` });
 		// console.log(operator.name, candidateType, isCandidateAddon, operatorManagerAddress);
 
@@ -70,7 +70,7 @@ export const OperatorItem: React.FC<OperatorItemProps> = React.memo(
 						<Heading color={"#304156"} fontSize="24px" fontWeight={700}>
 							{operator.name}
 						</Heading>
-						{isL2 && (
+						{isCandidateAddon && (
 							<Flex
 								bgColor={"#257eee"}
 								w={"34px"}
@@ -128,7 +128,7 @@ export const OperatorItem: React.FC<OperatorItemProps> = React.memo(
 						</Flex>
 
 						{/* {userStaked && userStaked !== '0' && ( */}
-						{operator.yourStaked && operator.yourStaked !== "0" && (
+						{userStaked && userStaked !== "0" && (
 							<Flex
 								align="center"
 								color={"#304156"}
@@ -150,8 +150,8 @@ export const OperatorItem: React.FC<OperatorItemProps> = React.memo(
 										// </Flex> :
 										commafy(
 											ethers.utils.formatUnits(
-												operator.yourStaked
-													? operator.yourStaked.toString()
+												userStaked
+													? userStaked.toString()
 													: "0",
 												27,
 											),
